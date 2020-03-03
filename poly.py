@@ -1,10 +1,5 @@
 import numpy as np
 
-L = 2             # tamanho inicial (m)
-A = 0.02          # area (m**2)
-E = 200 * 10**9   # mudulo elasticidade 
-P = 50 * 10**3    # forca (N)
-
 def calc_matriz_rigidez(E, A, L, M, quantElementos):
     return ((E*A)/(L/quantElementos)) * M
 
@@ -58,6 +53,11 @@ def calc_deformacao(L, vu, ):
 def calc_tensao(E, d):
     return E*d
 
+
+L = 2             # tamanho inicial (m)
+A = 0.02          # area (m**2)
+E = 200 * 10**9   # mudulo elasticidade 
+P = 50 * 10**3    # forca (N)
 
 F = np.array([0, 0, P])
 vu = np.array([0, 1, 1])
