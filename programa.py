@@ -14,6 +14,7 @@ list_nodes = [[N[0][i], N[1][i]] for i in range(N.shape[0]+1)]
 list_A = [i[3] for i in Inc]
 list_E = [i[2] for i in Inc]
 list_vigas_nodes = [[i[0], i[1]] for i in Inc]
+# print(Inc)
 
 vu_excel = np.array([(R[i][0]) for i in range(R.shape[0])])
 vP = [F[i][0] for i in range(F.shape[0])]
@@ -38,12 +39,11 @@ reacao = ponte.calc_reacao_apoio()
 d = ponte.calc_deformacao_global()
 t = ponte.calc_tensao_global()
 
-Inc_out = Inc
+N_out = N + ponte.vu.reshape(N.shape)
+ft.plota(N_out, Inc)
 
-Inc_out[:, 0:2] += ponte.vu.reshape([3, 2])
-N_out = N + ponte.vu.reshape([2, 3])
-
-# ft.plota(N_out, Inc_out)
+# print(N)
+# print(ponte.vu.reshape(N.shape))
 
 f_interna = 0
 t_interna = 0

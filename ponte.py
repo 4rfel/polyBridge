@@ -36,12 +36,15 @@ class Ponte():
         self.Mr_global = np.delete(self.Mr_global, obj=a, axis=col)
 
     def resolve(self):
-        vuf = np.linalg.solve(self.Mr_global, self.vP)
-        print(f"np:    {vuf}")
-        print()
-        vuf = self.solve()
-        print(f"nosso: {vuf}")
-        print()
+        # vuf = np.linalg.solve(self.Mr_global, self.vP)
+        # print(f"np:    {vuf}")
+        # print()
+        # vuf = self.solve_jacobi()
+        # print(f"jacobi: {vuf}")
+        # print()
+        vuf = self.solve_gauss()
+        # print(f"gauss: {vuf}")
+        # print()
         self.vu = self.remount_vu(self.vu, vuf)
 
     def remount_vu(self, vu, vuf):
@@ -80,7 +83,7 @@ class Ponte():
     def calc_tensao_global(self):
         return self.calc_deformacao_global(1)
 
-    def solve(self):
+    def solve_gauss(self):
         # x = vu
         # B = vP
         # A = Mr_global
@@ -88,27 +91,45 @@ class Ponte():
         vu += 1
         vuj = np.copy(vu)
         tolerancia = 1e-15
-
         while 1:
-            vuj = self.iteration(vuj)
-            k = 0
-            for i in range(vuj.shape[0]):
-                if abs((vuj[i]-vu[i])) > 1-tolerancia:
-                    k += 1
-                # else:
-                #     print(1-abs(vuj[i]-vu[i]))
+            vu = np.copy(vuj)
+            vuj = self.iteration_gauss(vuj)
+            k = abs((vuj - vu) / vuj)
+            if np.all(k < tolerancia):
+                return vuj
+            
+    def iteration_gauss(self, vuj):
+        for i in range(self.vP.shape[0]):
+            b = self.vP[i]
+            for j in range(self.vP.shape[0]):
+                if i != j:
+                    b -= self.Mr_global[i, j] * vuj[j]
+            vuj[i] = b / self.Mr_global[i, i]
 
-            if k == vuj.shape[0]-1:
-                break
         return vuj
 
-    def iteration(self, vuj):
+    def solve_jacobi(self):
+        # x = vu
+        # B = vP
+        # A = Mr_global
+        vu = np.zeros(self.vP.shape)
+        vu += 1
+        vuj = np.copy(vu)
+        tolerancia = 1e-15
+        while 1:
+            vu = np.copy(vuj)
+            vuj = self.iteration_gauss(vuj)
+            k = abs((vuj - vu) / vuj)
+            if np.all(k < tolerancia):
+                return vuj
+
+    def iteration_jacobi(self, vuj):
+        vu = np.copy(vuj)
         for i in range(self.vP.shape[0]):
+            b = self.vP[i]
             for j in range(self.vP.shape[0]):
-                if i == j:
-                    vuj[i] += self.vP[i]
-                else:
-                    vuj[i] -= self.Mr_global[i, j]*vuj[j]
-            vuj[i] /= self.Mr_global[i, i]
+                if i != j:
+                    b -= self.Mr_global[i, j] * vu[j]
+            vuj[i] = b / self.Mr_global[i, i]
 
         return vuj
