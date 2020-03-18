@@ -5,6 +5,8 @@ import numpy as np
 
 nn, N, nm, Inc, nc, F, nr, R = ft.importa("entrada.xlsx")
 
+# ft.plota(N, Inc)
+
 quant_nos = nn
 
 list_nodes = [[N[0][i], N[1][i]] for i in range(N.shape[0]+1)]
@@ -36,17 +38,28 @@ reacao = ponte.calc_reacao_apoio()
 d = ponte.calc_deformacao_global()
 t = ponte.calc_tensao_global()
 
+Inc_out = Inc
 
-print(f"""deslocamento: 
-{ponte.vu}
+Inc_out[:, 0:2] += ponte.vu.reshape([3, 2])
+N_out = N + ponte.vu.reshape([2, 3])
 
-reacao:
-{reacao}
+# ft.plota(N_out, Inc_out)
 
-deformacao:
-{d}
+f_interna = 0
+t_interna = 0
 
-tensao:   
-{t}
-""")
+ft.geraSaida("out", reacao, ponte.vu, d, f_interna, t_interna)
+
+# print(f"""deslocamento: 
+# {ponte.vu}
+
+# reacao:
+# {reacao}
+
+# deformacao:
+# {d}
+
+# tensao:   
+# {t}
+# """)
 

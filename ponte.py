@@ -1,5 +1,7 @@
 from viga import Viga
 import numpy as np
+from time import sleep
+
 row = 0
 col = 1
 
@@ -15,7 +17,6 @@ class Ponte():
             viga.get_mr()
 
     def mount_global_mr(self):
-
         Mr_global = np.zeros([self.quant_nos*2, self.quant_nos*2])
         for viga in self.vigas:
             Mr_global[viga.gdl[0]:viga.gdl[1]+1, viga.gdl[0]:viga.gdl[1]+1] += viga.mr[0:2, 0:2]
@@ -36,6 +37,11 @@ class Ponte():
 
     def resolve(self):
         vuf = np.linalg.solve(self.Mr_global, self.vP)
+        print(f"np:    {vuf}")
+        print()
+        vuf = self.solve()
+        print(f"nosso: {vuf}")
+        print()
         self.vu = self.remount_vu(self.vu, vuf)
 
     def remount_vu(self, vu, vuf):
@@ -74,50 +80,35 @@ class Ponte():
     def calc_tensao_global(self):
         return self.calc_deformacao_global(1)
 
+    def solve(self):
+        # x = vu
+        # B = vP
+        # A = Mr_global
+        vu = np.zeros(self.vP.shape)
+        vu += 1
+        vuj = np.copy(vu)
+        tolerancia = 1e-15
 
-# A = 2e-4    
-# E = 210e9
+        while 1:
+            vuj = self.iteration(vuj)
+            k = 0
+            for i in range(vuj.shape[0]):
+                if abs((vuj[i]-vu[i])) > 1-tolerancia:
+                    k += 1
+                # else:
+                #     print(1-abs(vuj[i]-vu[i]))
 
-# node1 = [  0,   0]
-# node2 = [  0, 0.4]
-# node3 = [0.3, 0.4]
+            if k == vuj.shape[0]-1:
+                break
+        return vuj
 
-# vu = np.array([0, 1, 0, 0, 1, 1])
+    def iteration(self, vuj):
+        for i in range(self.vP.shape[0]):
+            for j in range(self.vP.shape[0]):
+                if i == j:
+                    vuj[i] += self.vP[i]
+                else:
+                    vuj[i] -= self.Mr_global[i, j]*vuj[j]
+            vuj[i] /= self.Mr_global[i, i]
 
-# quant_nos = 3
-
-# vP = np.array([0, 0, 0, 0, 150, -100])
-
-# viga1 = Viga(node1, node2, A, E, [1, 2])
-
-# viga2 = Viga(node2, node3, A, E, [2, 3])
-
-# viga3 = Viga(node3, node1, A, E, [3, 1])
-
-# vigas = [viga1, viga2, viga3]
-
-# ponte = Ponte(vigas, quant_nos, vu, vP)
-
-# ponte.get_mrs()
-# ponte.mount_global_mr()
-# ponte.cond_contorn()
-# ponte.resolve()
-# reacao = ponte.calc_reacao_apoio()
-# d = ponte.calc_deformacao_global()
-# t = ponte.calc_tensao_global()
-
-
-# print(f"""deslocamento: 
-# {ponte.vu}
-
-# reacao:
-# {reacao}
-
-# deformacao:
-# {d}
-
-# tensao:   
-# {t}
-# """)
-
-
+        return vuj
