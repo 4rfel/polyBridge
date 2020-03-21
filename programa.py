@@ -3,9 +3,9 @@ from ponte import Ponte
 from viga import Viga
 import numpy as np
 
-nn, N, nm, Inc, nc, F, nr, R = ft.importa("entrada.xlsx")
+nn, N, nm, Inc, nc, F, nr, R = ft.importa("ponte.xlsx")
 
-# ft.plota(N, Inc)
+ft.plota_ponte(N, Inc)
 
 quant_nos = nn
 
@@ -40,7 +40,7 @@ d = ponte.calc_deformacao_global()
 t = ponte.calc_tensao_global()
 
 N_out = N + ponte.vu.reshape(N.shape)
-ft.plota(N_out, Inc)
+ft.plota_ponte(N_out, Inc)
 
 # print(N)
 # print(ponte.vu.reshape(N.shape))
