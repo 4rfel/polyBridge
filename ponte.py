@@ -37,14 +37,8 @@ class Ponte():
 
     def resolve(self):
         # vuf = np.linalg.solve(self.Mr_global, self.vP)
-        # print(f"np:    {vuf}")
-        # print()
         # vuf = self.solve_jacobi()
-        # print(f"jacobi: {vuf}")
-        # print()
         vuf = self.solve_gauss()
-        # print(f"gauss: {vuf}")
-        # print()
         self.vu = self.remount_vu(self.vu, vuf)
 
     def remount_vu(self, vu, vuf):
@@ -90,7 +84,7 @@ class Ponte():
         vu = np.zeros(self.vP.shape)
         vu += 1
         vuj = np.copy(vu)
-        tolerancia = 1e-15
+        tolerancia = 1e-5
         while 1:
             vu = np.copy(vuj)
             vuj = self.iteration_gauss(vuj)
@@ -115,7 +109,7 @@ class Ponte():
         vu = np.zeros(self.vP.shape)
         vu += 1
         vuj = np.copy(vu)
-        tolerancia = 1e-15
+        tolerancia = 1e-5
         while 1:
             vu = np.copy(vuj)
             vuj = self.iteration_gauss(vuj)
@@ -133,3 +127,20 @@ class Ponte():
             vuj[i] = b / self.Mr_global[i, i]
 
         return vuj
+
+    def calc_f(self, t):
+        area = []
+        for viga in self.vigas:
+            area.append(viga.A)
+        area = np.array(area)
+        t = np.array(t)
+        return t * area
+
+    def testa_colapso(self, trt, trc, t, d):
+        for i in t:
+            if abs(i) > trt or abs(i) > trc:
+                return 1
+        if np.any(self.vu > 0.02):
+            return 1
+        # if np.any(d )
+        return 0

@@ -8,13 +8,10 @@ nn, N, nm, Inc, nc, F, nr, R = ft.importa("ponte.xlsx")
 ft.plota_ponte(N, Inc)
 
 quant_nos = nn
-
-list_nodes = [[N[0][i], N[1][i]] for i in range(N.shape[0]+1)]
-
+list_nodes = [[N[0][i], N[1][i]] for i in range(N.shape[1])]
 list_A = [i[3] for i in Inc]
 list_E = [i[2] for i in Inc]
 list_vigas_nodes = [[i[0], i[1]] for i in Inc]
-# print(Inc)
 
 vu_excel = np.array([(R[i][0]) for i in range(R.shape[0])])
 vP = [F[i][0] for i in range(F.shape[0])]
@@ -25,11 +22,10 @@ for i in vu_excel:
 
 vigas = []
 for i in range(len(list_vigas_nodes)):
-    viga = Viga(list_nodes[int(list_vigas_nodes[i][0]-1)], list_nodes[int(list_vigas_nodes[i][1]-1)], list_A[i], list_E[i], list_vigas_nodes[i])
+    viga = Viga(list_nodes[int(list_vigas_nodes[i][0]-1)], list_nodes[int(list_vigas_nodes[i][1]-1)], list_A[i], list_E[0], list_vigas_nodes[i])
     vigas.append(viga)
 
 ponte = Ponte(vigas, quant_nos, vu, vP)
-
 
 ponte.get_mrs()
 ponte.mount_global_mr()
@@ -42,24 +38,11 @@ t = ponte.calc_tensao_global()
 N_out = N + ponte.vu.reshape(N.shape)
 ft.plota_ponte(N_out, Inc)
 
-# print(N)
-# print(ponte.vu.reshape(N.shape))
+f_interna = ponte.calc_f(t)
 
-f_interna = 0
-t_interna = 0
+tensao_ruptura_tracao = 1000000
+tensao_ruptura_compressao = 1000000
 
-ft.geraSaida("out", reacao, ponte.vu, d, f_interna, t_interna)
-
-# print(f"""deslocamento: 
-# {ponte.vu}
-
-# reacao:
-# {reacao}
-
-# deformacao:
-# {d}
-
-# tensao:   
-# {t}
-# """)
-
+c = ponte.testa_colapso(tensao_ruptura_tracao, tensao_ruptura_compressao, t, d)
+print(f"colapso {c}")
+ft.geraSaida("out", reacao, ponte.vu, d, f_interna, t)

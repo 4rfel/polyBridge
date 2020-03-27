@@ -46,6 +46,8 @@ def plota(N,Inc):
         n2 = int(Inc[i,1])        
 
         plt.plot([N[0,n1-1],N[0,n2-1]],[N[1,n1-1],N[1,n2-1]],color='r',linewidth=3)
+        plt.plot(N[0,n1-1], N[1,n1-1], "go")
+        plt.plot(N[0,n2-1], N[1,n2-1], "go")
 
 
     plt.xlabel('x [m]')
@@ -65,14 +67,14 @@ def plota_ponte(N,Inc):
 #    plt.show()
     fig = plt.figure()
 
-
-    cargax = [0.19, 0.20, 0.20, 0.20, 0.21]
-    cargay = [0.47, 0.45, 0.51, 0.45, 0.47]
-    # plt.plot(cargax, cargay, "g", linewidth=2)
+    cargax = np.array([0.19, 0.20, 0.20, 0.20, 0.21])
+    cargay = np.array([0.47, 0.45, 0.51, 0.45, 0.47]) - 0.11
+    plt.plot(cargax - 0.04, cargay, "g", linewidth=2)
+    plt.plot(cargax + 0.04, cargay, "g", linewidth=2)
 
     k = 0.05
     caixax = np.array([0,          0,   0.05,  0.05,  0.45,   0.45,    0.5, 0.5, 0]) - 0.05
-    caixay = np.array([0, 0.11+2*k, 0.11+2*k, 1.2*k, 1.2*k, 0.11+2*k, 0.11+2*k,   0, 0]) - 2*k
+    caixay = np.array([0, 0.15+2*k, 0.15+2*k, 1.2*k, 1.2*k, 0.15+2*k, 0.15+2*k,   0, 0]) - 2*k
 
     plt.plot(caixax, caixay, "b", linewidth=2)
 
@@ -85,7 +87,8 @@ def plota_ponte(N,Inc):
         plt.plot([N[0,n1-1],N[0,n2-1]],[N[1,n1-1],N[1,n2-1]], color='r', linewidth=2)
         plt.plot(N[0,n1-1], N[1,n1-1], "go")
         plt.plot(N[0,n2-1], N[1,n2-1], "go")
-
+        plt.text(N[0,n1-1]+0.01, N[1,n1-1], str(n1), fontsize=10)
+        plt.text(N[0,n2-1]+0.01, N[1,n2-1], str(n2), fontsize=10)
 
     plt.xlabel('x [m]')
     plt.ylabel('y [m]')
@@ -163,19 +166,18 @@ def importa(entradaNome):
     return nn,N,nm,Inc,nc,F,nr,R
 
 def geraSaida(nome,Ft,Ut,Epsi,Fi,Ti):
-    nome = nome + '.txt'
-    f = open("saida.txt","w+")
-    f.write('Reacoes de apoio [N]\n')
-    f.write(str(Ft))
-    f.write('\n\nDeslocamentos [m]\n')
-    f.write(str(Ut))
-    f.write('\n\nDeformacoes []\n')
-    f.write(str(Epsi))
-    f.write('\n\nForcas internas [N]\n')
-    f.write(str(Fi))
-    f.write('\n\nTensoes internas [Pa]\n')
-    f.write(str(Ti))
-    f.close()
-    
+    with open(nome+".txt", "w") as txt:
+        txt.write(f"""Reacoes de apoio [N]
+{Ft}
+        
+Deslocamentos [m]
+{Ut}
+        
+Deformacoes []
+{Epsi}
 
+Forcas internas [N]
+{Fi}
 
+Tensoes internas [Pa]
+{Ti}""")
