@@ -48,6 +48,8 @@ def plota(N,Inc):
         plt.plot([N[0,n1-1],N[0,n2-1]],[N[1,n1-1],N[1,n2-1]],color='r',linewidth=3)
         plt.plot(N[0,n1-1], N[1,n1-1], "go")
         plt.plot(N[0,n2-1], N[1,n2-1], "go")
+        plt.text(N[0,n1-1]+0.01, N[1,n1-1], str(n1), fontsize=10)
+        plt.text(N[0,n2-1]+0.01, N[1,n2-1], str(n2), fontsize=10)
 
 
     plt.xlabel('x [m]')

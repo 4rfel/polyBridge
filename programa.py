@@ -3,9 +3,12 @@ from ponte import Ponte
 from viga import Viga
 import numpy as np
 
-nn, N, nm, Inc, nc, F, nr, R = ft.importa("ponte.xlsx")
-
-ft.plota_ponte(N, Inc)
+p = 0
+nn, N, nm, Inc, nc, F, nr, R = ft.importa("thi.xlsx")
+if p:
+    ft.plota_ponte(N, Inc)
+else:
+    ft.plota(N, Inc)
 
 quant_nos = nn
 list_nodes = [[N[0][i], N[1][i]] for i in range(N.shape[1])]
@@ -22,7 +25,7 @@ for i in vu_excel:
 
 vigas = []
 for i in range(len(list_vigas_nodes)):
-    viga = Viga(list_nodes[int(list_vigas_nodes[i][0]-1)], list_nodes[int(list_vigas_nodes[i][1]-1)], list_A[i], list_E[0], list_vigas_nodes[i])
+    viga = Viga(list_nodes[int(list_vigas_nodes[i][0]-1)], list_nodes[int(list_vigas_nodes[i][1]-1)], list_A[i], list_E[i], list_vigas_nodes[i])
     vigas.append(viga)
 
 ponte = Ponte(vigas, quant_nos, vu, vP)
@@ -36,13 +39,17 @@ d = ponte.calc_deformacao_global()
 t = ponte.calc_tensao_global()
 
 N_out = N + ponte.vu.reshape(N.shape)
-ft.plota_ponte(N_out, Inc)
+
+if p:
+    ft.plota_ponte(N, Inc)
+else:
+    ft.plota(N, Inc)
 
 f_interna = ponte.calc_f(t)
 
 tensao_ruptura_tracao = 1000000
 tensao_ruptura_compressao = 1000000
 
-c = ponte.testa_colapso(tensao_ruptura_tracao, tensao_ruptura_compressao, t, d)
+c = ponte.testa_colapso(tensao_ruptura_tracao, tensao_ruptura_compressao, t, d, vu, ponte.vu)
 print(f"colapso {c}")
-ft.geraSaida("out", reacao, ponte.vu, d, f_interna, t)
+ft.geraSaida("out_thi", reacao, ponte.vu, d, f_interna, t)

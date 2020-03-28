@@ -1,6 +1,6 @@
 from viga import Viga
 import numpy as np
-from time import sleep
+from time import sleep, time
 
 row = 0
 col = 1
@@ -36,9 +36,13 @@ class Ponte():
         self.Mr_global = np.delete(self.Mr_global, obj=a, axis=col)
 
     def resolve(self):
-        # vuf = np.linalg.solve(self.Mr_global, self.vP)
+        vuf = np.linalg.solve(self.Mr_global, self.vP)
+        # print(f"np: {vuf}")
         # vuf = self.solve_jacobi()
-        vuf = self.solve_gauss()
+        # print(f"ja: {vuj}")
+        # vuf = self.solve_gauss()
+        # print(vufa - vuf)
+        # print(f"ga: {vuf}")
         self.vu = self.remount_vu(self.vu, vuf)
 
     def remount_vu(self, vu, vuf):
@@ -82,14 +86,23 @@ class Ponte():
         # B = vP
         # A = Mr_global
         vu = np.zeros(self.vP.shape)
-        vu += 1
+        # vu += 1
         vuj = np.copy(vu)
-        tolerancia = 1e-5
+        tolerancia = 1e-25
+        t = time()
         while 1:
             vu = np.copy(vuj)
-            vuj = self.iteration_gauss(vuj)
-            k = abs((vuj - vu) / vuj)
-            if np.all(k < tolerancia):
+            vuj = self.iteration_gauss(np.copy(vu))
+            k = abs((vuj - vu) /1)
+            # print(f"vu:  {vu}")
+            # print(f"vuj: {vuj}")
+            # print(f"k    : {k}")
+            # print(f"k max: {np.amax(k)}")
+            # print()
+            # sleep(1)
+
+            if np.amax(k) < tolerancia:
+                print(time() - t)
                 return vuj
             
     def iteration_gauss(self, vuj):
@@ -107,12 +120,12 @@ class Ponte():
         # B = vP
         # A = Mr_global
         vu = np.zeros(self.vP.shape)
-        vu += 1
+        vu += 1e-9
         vuj = np.copy(vu)
         tolerancia = 1e-5
         while 1:
-            vu = np.copy(vuj)
-            vuj = self.iteration_gauss(vuj)
+            vu = vuj
+            vuj = self.iteration_gauss(np.copy(vu))
             k = abs((vuj - vu) / vuj)
             if np.all(k < tolerancia):
                 return vuj
@@ -136,11 +149,13 @@ class Ponte():
         t = np.array(t)
         return t * area
 
-    def testa_colapso(self, trt, trc, t, d):
+    def testa_colapso(self, trt, trc, t, d, vui, vuf):
         for i in t:
             if abs(i) > trt or abs(i) > trc:
                 return 1
         if np.any(self.vu > 0.02):
             return 1
-        # if np.any(d )
+        print(abs((vuf - vui) / vuf))
+        if np.amax(abs((vuf - vui) / vuf)) > 0.05:
+            return 1
         return 0
