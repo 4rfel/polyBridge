@@ -4,7 +4,7 @@ from viga import Viga
 import numpy as np
 
 p = 0
-nn, N, nm, Inc, nc, F, nr, R = ft.importa("thi.xlsx")
+nn, N, nm, Inc, nc, F, nr, R = ft.importa("aps.xlsx")
 if p:
     ft.plota_ponte(N, Inc)
 else:
