@@ -4,7 +4,7 @@ from viga import Viga
 import numpy as np
 
 p = 0
-nn, N, nm, Inc, nc, F, nr, R = ft.importa("thi.xlsx")
+nn, N, nm, Inc, nc, F, nr, R = ft.importa("ex2.xlsx")
 if p:
     ft.plota_ponte(N, Inc)
 else:
@@ -35,8 +35,8 @@ ponte.mount_global_mr()
 ponte.cond_contorn()
 ponte.resolve()
 reacao = ponte.calc_reacao_apoio()
-d = ponte.calc_deformacao_global()
-t = ponte.calc_tensao_global()
+d = np.array(ponte.calc_deformacao_global())
+t = np.array(ponte.calc_tensao_global())
 
 N_out = N + ponte.vu.reshape(N.shape)
 
@@ -51,5 +51,5 @@ tensao_ruptura_tracao = 1000000
 tensao_ruptura_compressao = 1000000
 
 c = ponte.testa_colapso(tensao_ruptura_tracao, tensao_ruptura_compressao, t, d, vu, ponte.vu)
-print(f"colapso {c}")
-ft.geraSaida("out_thi", reacao, ponte.vu, d, f_interna, t)
+# print(f"colapso {c}")
+ft.geraSaida("revisao", reacao.reshape([len(reacao), 1]), ponte.vu.reshape([len(ponte.vu), 1]), d.reshape([len(d), 1]), f_interna.reshape([len(f_interna), 1]), t.reshape([len(t), 1]))

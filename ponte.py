@@ -11,6 +11,7 @@ class Ponte():
         self.quant_nos = quant_nos
         self.vP = vP
         self.vu = vu
+        self.vu_orig = vu
 
     def get_mrs(self):
         for viga in self.vigas:
@@ -58,7 +59,14 @@ class Ponte():
 
     def calc_reacao_apoio(self):
         self.mount_global_mr()
-        return np.matmul(self.Mr_global, self.vu)
+        r = np.matmul(self.Mr_global, self.vu)
+        r = np.array(r)
+        for i in range(len(self.vu_orig)):
+            if self.vu_orig[i] != 0:
+                r[i] = 0
+        return r
+        
+
 
     def calc_deformacao_global(self, tensao=0):
         deformacoes = []
@@ -126,8 +134,8 @@ class Ponte():
         while 1:
             vu = vuj
             vuj = self.iteration_gauss(np.copy(vu))
-            k = abs((vuj - vu) / vuj)
-            if np.all(k < tolerancia):
+            k = np.absolute((vuj - vu) / vuj)
+            if np.amax(k) < vuj:
                 return vuj
 
     def iteration_jacobi(self, vuj):
@@ -138,7 +146,6 @@ class Ponte():
                 if i != j:
                     b -= self.Mr_global[i, j] * vu[j]
             vuj[i] = b / self.Mr_global[i, i]
-
         return vuj
 
     def calc_f(self, t):
@@ -155,7 +162,6 @@ class Ponte():
                 return 1
         if np.any(self.vu > 0.02):
             return 1
-        print(abs((vuf - vui) / vuf))
-        if np.amax(abs((vuf - vui) / vuf)) > 0.05:
-            return 1
+        # if np.amax(np.abs((vuf - vui) / vuf)) > 0.05:
+        #     return 1
         return 0
