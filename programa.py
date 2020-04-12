@@ -4,9 +4,9 @@ from viga import Viga
 import numpy as np
 
 p = 0
-nn, N, nm, Inc, nc, F, nr, R = ft.importa("ex2.xlsx")
+nn, N, nm, Inc, nc, F, nr, R = ft.importa("ponte.xlsx")
 if p:
-    ft.plota_ponte(N, Inc)
+    ft.plota_ponte(N, Inc)  
 else:
     ft.plota(N, Inc)
 
@@ -51,5 +51,5 @@ tensao_ruptura_tracao = 1000000
 tensao_ruptura_compressao = 1000000
 
 c = ponte.testa_colapso(tensao_ruptura_tracao, tensao_ruptura_compressao, t, d, vu, ponte.vu)
-# print(f"colapso {c}")
-ft.geraSaida("revisao", reacao.reshape([len(reacao), 1]), ponte.vu.reshape([len(ponte.vu), 1]), d.reshape([len(d), 1]), f_interna.reshape([len(f_interna), 1]), t.reshape([len(t), 1]))
+ft.geraSaida("ponte", reacao.reshape([len(reacao), 1]), ponte.vu.reshape([len(ponte.vu), 1]), d.reshape([len(d), 1]), f_interna.reshape([len(f_interna), 1]), t.reshape([len(t), 1]))
+

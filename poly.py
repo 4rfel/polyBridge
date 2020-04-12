@@ -28,10 +28,15 @@ def cond_contorno(F, E, A, L, vu):
     vu = np.linalg.solve(mr, F)
     return vu
     
-def calc_reacao_apoio(E, A, L, vu):
+def calc_reacao_apoio(E, A, L, vu, vu_orig):
     M = mount_M(vu)
     mr = calc_matriz_rigidez(E, A, L, M, len(vu)-1)
-    return np.matmul(mr, vu)
+    r = np.matmul(mr, vu)
+    r = np.array(r)
+    for i in range(len(vu_orig)):
+        if vu_orig[i] != 0:
+            r[i] = 0
+    return r
     
 def remount_vu(vu, vuf):
     v = []
@@ -62,10 +67,11 @@ P = 50 * 10**3    # forca (N)
 
 F = np.array([0, 0, P])
 vu = np.array([0, 1, 1])
+vu_orig = vu
 
 vuf = cond_contorno(F, E, A, L, vu)
 vu = remount_vu(vu, vuf)
-reacao = calc_reacao_apoio(E, A, L, vu)
+reacao = calc_reacao_apoio(E, A, L, vu, vu_orig)
 d = calc_deformacao(L, vu)
 t = calc_tensao(E, d)
 
