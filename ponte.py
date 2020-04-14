@@ -160,8 +160,8 @@ class Ponte():
         for i in t:
             if abs(i) > trt or abs(i) > trc:
                 return 1
-        if np.any(self.vu > 0.02):
-            return 1
+        # if np.any(self.vu > 0.02):
+        #     return 1
         # if np.amax(np.abs((vuf - vui) / vuf)) > 0.05:
         #     return 1
         return 0
