@@ -37,9 +37,9 @@ class Ponte():
         self.Mr_global = np.delete(self.Mr_global, obj=a, axis=col)
 
     def resolve(self):
-        # vuf = np.linalg.solve(self.Mr_global, self.vP)
+        vuf = np.linalg.solve(self.Mr_global, self.vP)
         # vuf = self.solve_jacobi()
-        vuf = self.solve_gauss()
+        # vuf = self.solve_gauss()
         self.vu = self.remount_vu(self.vu, vuf)
 
     def remount_vu(self, vu, vuf):
@@ -61,8 +61,6 @@ class Ponte():
             if self.vu_orig[i] != 0:
                 r[i] = 0
         return r
-        
-
 
     def calc_deformacao_global(self, tensao=0):
         deformacoes = []
@@ -90,7 +88,6 @@ class Ponte():
         # B = vP
         # A = Mr_global
         vu = np.zeros(self.vP.shape)
-        # vu += 1
         vuj = np.copy(vu)
         tolerancia = 1e-25
         t = time()
@@ -149,8 +146,14 @@ class Ponte():
         for i in t:
             if abs(i) > trt or abs(i) > trc:
                 return 1
-        # if np.any(self.vu > 0.02):
-        #     return 1
+        if np.any(self.vu > 0.02):
+            return 1
         # if np.amax(np.abs((vuf - vui) / vuf)) > 0.05:
         #     return 1
         return 0
+
+    def calc_peso(self, densidade):
+        m = 0
+        for viga in self.vigas:
+            m += viga.L * viga.A * densidade
+        return m

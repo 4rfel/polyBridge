@@ -3,12 +3,10 @@ from ponte import Ponte
 from viga import Viga
 import numpy as np
 
-p = 1
-nn, N, nm, Inc, nc, F, nr, R = ft.importa("ponte.xlsx")
+p = 0
+nn, N, nm, Inc, nc, F, nr, R = ft.importa("ponte_imortal.xlsx")
 if p:
     ft.plota_ponte(N, Inc)  
-else:
-    ft.plota(N, Inc)
 
 quant_nos = nn
 list_nodes = [[N[0][i], N[1][i]] for i in range(N.shape[1])]
@@ -41,9 +39,7 @@ t = np.array(ponte.calc_tensao_global())
 N_out = N + ponte.vu.reshape(N.shape)
 
 if p:
-    ft.plota_ponte(N, Inc)
-else:
-    ft.plota(N, Inc)
+    ft.plota_ponte(N_out, Inc)
 
 f_interna = ponte.calc_f(t)
 
@@ -52,5 +48,6 @@ tensao_ruptura_compressao = 18e6
 
 c = ponte.testa_colapso(tensao_ruptura_tracao, tensao_ruptura_compressao, t, d, vu, ponte.vu)
 print(c)
-ft.geraSaida("ponte", reacao.reshape([len(reacao), 1]), ponte.vu.reshape([len(ponte.vu), 1]), d.reshape([len(d), 1]), f_interna.reshape([len(f_interna), 1]), t.reshape([len(t), 1]))
+print(ponte.calc_peso(848))
+ft.geraSaida("ponte_imortal", reacao.reshape([len(reacao), 1]), ponte.vu.reshape([len(ponte.vu), 1]), d.reshape([len(d), 1]), f_interna.reshape([len(f_interna), 1]), t.reshape([len(t), 1]))
 
