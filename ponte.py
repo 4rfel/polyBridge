@@ -37,13 +37,9 @@ class Ponte():
         self.Mr_global = np.delete(self.Mr_global, obj=a, axis=col)
 
     def resolve(self):
-        vuf = np.linalg.solve(self.Mr_global, self.vP)
-        # print(f"np: {vuf}")
+        # vuf = np.linalg.solve(self.Mr_global, self.vP)
         # vuf = self.solve_jacobi()
-        # print(f"ja: {vuj}")
-        # vuf = self.solve_gauss()
-        # print(vufa - vuf)
-        # print(f"ga: {vuf}")
+        vuf = self.solve_gauss()
         self.vu = self.remount_vu(self.vu, vuf)
 
     def remount_vu(self, vu, vuf):
@@ -102,13 +98,6 @@ class Ponte():
             vu = np.copy(vuj)
             vuj = self.iteration_gauss(np.copy(vu))
             k = abs((vuj - vu) /1)
-            # print(f"vu:  {vu}")
-            # print(f"vuj: {vuj}")
-            # print(f"k    : {k}")
-            # print(f"k max: {np.amax(k)}")
-            # print()
-            # sleep(1)
-
             if np.amax(k) < tolerancia:
                 print(time() - t)
                 return vuj
